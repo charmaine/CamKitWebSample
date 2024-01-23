@@ -12,4 +12,6 @@ Sample Camera Kit Web applicaition that lets you capture photos on your web brow
 4. Replace API Key, Lens Group ID and Lens ID
 5. Run the app with `npm run dev`
 
+## Sample App
+
 ![Sample Web App running](https://github.com/charmaine/CamKitWebSample/assets/16736130/3562db06-b62a-40c0-a6dd-762ef8837193)
