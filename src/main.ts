@@ -1,64 +1,55 @@
 import { bootstrapCameraKit } from '@snap/camera-kit';
 import html2canvas from 'html2canvas';
 
-(async function () {
+const API_TOKEN = 'YOUR_API_TOKEN'; // Replace with your actual API token
+const CANVAS_ID = 'canvas';
+const SCREENSHOT_ID = 'screenshot';
+const CAMERA_OUTPUT_ID = 'camera--output';
+const CAPTURE_ID = 'capture';
 
-  const cameraKit = await bootstrapCameraKit({
-    apiToken: 'eyJhbGciOiJIUzI1NiIsImtpZCI6IkNhbnZhc1MyU0hNQUNQcm9kIiwidHlwIjoiSldUIn0.eyJhdWQiOiJjYW52YXMtY2FudmFzYXBpIiwiaXNzIjoiY2FudmFzLXMyc3Rva2VuIiwibmJmIjoxNzA0NDg1OTA3LCJzdWIiOiJhYjBlNGYxMS0wOWMwLTQyZWUtYjNlYy00NWUzZWIxMzZmMzN-U1RBR0lOR342MjA5MTI4Mi0wYjk5LTRkZjUtYTdmNS00ZjU5NmFhNDliMjgifQ.07MNBF1i4dM2FbB22ZPyDueQIs0IWb9aiWbm8tIAabs',
-  });
-  const liveRenderTarget = document.getElementById(
-    'canvas'
-  ) as HTMLCanvasElement;
+async function initializeCamera() {
+  const cameraKit = await bootstrapCameraKit({ apiToken: API_TOKEN });
+  const liveRenderTarget = document.getElementById(CANVAS_ID) as HTMLCanvasElement;
   const session = await cameraKit.createSession({ liveRenderTarget });
-  const mediaStream = await navigator.mediaDevices.getUserMedia({
-    video: true,
-  });
+  const mediaStream = await navigator.mediaDevices.getUserMedia({ video: true });
 
   await session.setSource(mediaStream);
   await session.play();
 
   const lens = await cameraKit.lensRepository.loadLens(
-    '88bd0d05-f7ab-4f0f-8bb7-e12b5a931d67',
-    '564389e3-d2aa-474a-94b9-009baf5b4d14'
+     '<YOUR_LENS_ID>', // Replace with your actual Lens ID 
+     '<YOUR_LENS_GROUP_ID>' // Replace with your actual Lens Group ID
   );
-
   await session.applyLens(lens);
+}
 
-
-  // screenshot
-  const elem = document.querySelector('#screenshot');
-
-  elem.addEventListener('click', () => {
-    canvas.toBlob((blob) => {
-      saveBlob(blob, `screencapture-${canvas.width}x${canvas.height}.png`);
-    });
+function handleScreenshot() {
+  const canvas = document.getElementById(CANVAS_ID) as HTMLCanvasElement;
+  canvas.toBlob((blob) => {
+    const fileName = `screencapture-${canvas.width}x${canvas.height}.png`;
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = fileName;
+    link.click();
   });
+}
 
-  const cameraOutput = document.querySelector("#camera--output")
- 
-  const saveBlob = (function() {
-    const a = document.createElement('a');
-    document.body.appendChild(a);
-    a.style.display = 'none';
-    return function saveData(blob, fileName) {
-       const url = window.URL.createObjectURL(blob);
-       console.log(cameraOutput);
-       a.href = url;
-       a.download = fileName;
-       a.click();
-    };
-  }());
+function handleCapture() {
+  const cameraOutput = document.querySelector(`#${CAMERA_OUTPUT_ID}`);
+  const canvas = document.getElementById(CANVAS_ID) as HTMLCanvasElement;
+  cameraOutput.src = canvas.toDataURL('image/webp');
+  cameraOutput.classList.add('taken');
+}
 
-  //capture
-  const capture = document.querySelector('#capture');
+async function main() {
+  await initializeCamera();
 
-  capture.addEventListener('click', () => {
-    cameraOutput.src = canvas.toDataURL("image/webp");
-    cameraOutput.classList.add("taken");
-  });
+  const screenshotButton = document.querySelector(`#${SCREENSHOT_ID}`);
+  screenshotButton?.addEventListener('click', handleScreenshot);
 
-    
-})();
+  const captureButton = document.querySelector(`#${CAPTURE_ID}`);
+  captureButton?.addEventListener('click', handleCapture);
+}
 
-
-
+main();
