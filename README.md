@@ -7,7 +7,7 @@ Sample Camera Kit Web applicaition that lets you capture photos on your web brow
 2. ```
    cd vite-project 
    code -a . (if using VSCode)
-   npm install``
+   npm install
 3. Install Camera Kit SDK with `npm install @snap/camera-kit`
 4. Replace API Key, Lens Group ID and Lens ID
 5. Run the app with `npm run dev`
